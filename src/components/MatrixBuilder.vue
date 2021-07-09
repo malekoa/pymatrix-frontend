@@ -11,7 +11,7 @@
         <span class="flex w-full justify-between p-2">
             <span class="space-x-2">
                 <button class="text-sm font-bold rounded-sm border px-1 py-0.5" @click="randomizeEntries">Randomize</button>
-                <button class="text-sm font-bold rounded-sm border px-1 py-0.5 text-red-600">
+                <button class="text-sm font-bold rounded-sm border px-1 py-0.5 text-red-600" @click="clearMatrix">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </span>
@@ -45,20 +45,30 @@ export default {
         }
     },
     methods: {
+        clearMatrix() {
+            this.data.forEach(row => {
+                row.forEach(entry => {
+                    entry.value = '0';
+                });
+            });
+            this.onUpdate();
+        },
         validateEntry(value) {
             value = String(value)
             let numSlashes = 0;
             let numDecimals = 0;
+            let numMinus = 0;
             let nonNumericChars = 0;
 
             [...value].forEach(character => {
                 character == '.' ? numDecimals++ : null;
                 character == '/' ? numSlashes++ : null;
+                character == '-' ? numMinus++ : null;
                 Number.isInteger(parseInt(character)) ? null : nonNumericChars++;
             });
 
-            // if there are more nonNumericChars than just the slashes and decimals in the string
-            if(nonNumericChars > (numSlashes + numDecimals)) {
+            // if there are more nonNumericChars than just the slashes, decimals, and minuses in the string
+            if(nonNumericChars > (numSlashes + numDecimals + numMinus)) {
                 return false;
             }
 
@@ -72,8 +82,14 @@ export default {
                 return false;
             }
 
-            // if the field is left empty
-            if(value == '') {
+            // if the field is left empty or is just a decimal or slash
+            if(value == '' || value == '.' || value == '/') {
+                return false;
+            }
+
+            // if the first or last character is a slash
+            let valArray = [...value];
+            if(valArray[0] == '/' || valArray[valArray.length - 1] == '/') {
                 return false;
             }
 
@@ -146,7 +162,15 @@ export default {
         randomizeEntries() {
             this.data.forEach(row => {
                 row.forEach(entry => {
-                    entry.value = Math.floor(Math.random() * 10);
+                    let newNum = Math.floor(Math.random() * 10) + 1
+                    let newDen = Math.floor(Math.random() * 10) + 1
+                    let newVal = '';
+                    if(newDen != 1 && newNum != newDen) {
+                        newVal = `${newNum}/${newDen}`
+                    } else {
+                        newVal = newNum;
+                    }
+                    entry.value = newVal;
                 });
             });
             this.onUpdate();
@@ -159,7 +183,15 @@ export default {
     watch: {
         shouldUpdate: function(newVal, oldVal) {
             if(newVal == true && oldVal == false) {
-                this.data = this.$store.state.resultMatrix.data;
+                let newData = [];
+                this.$store.state.resultMatrix.data.forEach(row => {
+                    let newRow = [];
+                    row.forEach(entry => {
+                        newRow.push({value: entry.value});
+                    });
+                    newData.push(newRow);
+                });
+                this.data = newData;
                 this.rows = this.$store.state.resultMatrix.rows;
                 this.cols = this.$store.state.resultMatrix.cols;
                 this.$emit('updateComplete', this.identity);
