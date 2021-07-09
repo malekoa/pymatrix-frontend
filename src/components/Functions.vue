@@ -187,14 +187,14 @@
                 </button>
             </div>
         </div>
-        <div class="flex flex-col w-full mt-2">
+        <div class="flex flex-col w-full my-2">
             <div class="flex flex-col w-full p-2 space-y-2" :class="activeFunction == 'Determinant' ? 'hidden' : 'null'">
                 <div v-for="row in this.data" :key="row" class="flex space-x-2 justify-center">
                     <input type="text" v-for="entry in row" :key="entry" class="w-1/6 border rounded-sm text-center bg-gray-50" v-model="entry.value" @input="onUpdate" disabled>
                 </div>
             </div>
             <div class="flex w-full justify-center" :class="activeFunction == 'Determinant' ? 'null' : 'hidden'">
-                <input type="text" class="w-1/6 border rounded-sm text-center bg-gray-50" v-model="determinant_res">
+                <input type="text" class="w-1/3 border rounded-sm text-center bg-gray-50" v-model="determinant_res">
             </div>
         </div>
         <div class="flex space-x-2" :class="activeFunction == 'Determinant' ? 'hidden' : 'null'">
@@ -244,6 +244,14 @@ export default {
             };
             this.$store.commit('updateResultMatrix', payload);
             //console.log(this.$store.state);
+        },
+        validateSumAndDiff() {
+            let leftMatrixData = this.getMatrixData(this.leftMatrix);
+            let rightMatrixData = this.getMatrixData(this.rightMatrix);
+            if(leftMatrixData.length != rightMatrixData.length || leftMatrixData[0].length != rightMatrixData[0].length) {
+                return false; 
+            }
+            return true;
         },
         sendDataToMatrix(matrixLabel) {
             if(matrixLabel == 'A') {
@@ -484,6 +492,11 @@ export default {
             if(newVal != 'Determinant') {
                 this.determinant_res = '';
             }
+            this.data.forEach(row => {
+                row.forEach(entry => {
+                    entry.value = '';
+                });
+            });
         }
     },
 }

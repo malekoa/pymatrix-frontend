@@ -1,13 +1,30 @@
 <template>
-    <!--
-    <div id="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
+    <div class="h-screen">
+        <div class="flex justify-between items-center px-4 w-full absolute h-16 bg-gray-200 shadow">
+            <span class="font-bold italic">Logo</span>
+            <span class="text-sm space-x-4">
+                <router-link to="/" :class="activeTab == 'Home' ? 'font-bold' : 'null'" @click="setActiveTab('Home')">Home</router-link>
+                <router-link to="/about" :class="activeTab == 'About' ? 'font-bold' : 'null'" @click="setActiveTab('About')">About</router-link>
+            </span>
+        </div>
+        <router-view/>
     </div>
-    -->
-    <router-view/>
 </template>
 
+<script>
+export default {
+    data: function() {
+        return {
+            activeTab: 'Home',
+        }
+    },
+    methods: {
+        setActiveTab(newTab) {
+            this.activeTab = newTab;
+        },
+    },
+}
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

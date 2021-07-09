@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col md:justify-center md:h-screen bg-gray-100 items-center">
-        <div class="flex flex-col md:flex-row p-2 space-y-2 md:space-y-0 md:space-x-2 md:w-11/12">
+    <div class="flex flex-col md:justify-center md:h-full bg-gray-100 items-center pt-16 md:pt-0">
+        <div class="flex flex-col w-full md:flex-row p-2 space-y-2 md:space-y-0 md:space-x-2 md:w-11/12">
             <MatrixBuilder :shouldUpdate="requestingMatrixAUpdate" identity="A" @updateComplete="completeUpdateRequest"></MatrixBuilder> 
             <MatrixBuilder :shouldUpdate="requestingMatrixBUpdate" identity="B" @updateComplete="completeUpdateRequest"></MatrixBuilder> 
         </div>
