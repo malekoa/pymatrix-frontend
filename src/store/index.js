@@ -27,11 +27,11 @@ export default createStore({
             state.matrixA = payload;
         },
         updateMatrixB(state, payload) {
-            // Called every time that matrix A is changed
+            // Called every time that matrix B is changed
             state.matrixB = payload;
         },
         updateResultMatrix(state, payload) {
-            // Called every time that matrix A is changed
+            // Called every time that the resultMatrix is changed
             state.resultMatrix = payload;
         },
     },

@@ -163,14 +163,14 @@ export default {
             this.data.forEach(row => {
                 row.forEach(entry => {
                     let newNum = Math.floor(Math.random() * 10) + 1
-                    let newDen = Math.floor(Math.random() * 10) + 1
-                    let newVal = '';
-                    if(newDen != 1 && newNum != newDen) {
-                        newVal = `${newNum}/${newDen}`
-                    } else {
-                        newVal = newNum;
-                    }
-                    entry.value = newVal;
+                    //let newDen = Math.floor(Math.random() * 10) + 1
+                    //let newVal = '';
+                    //if(newDen != 1 && newNum != newDen) {
+                    //    newVal = `${newNum}/${newDen}`
+                    //} else {
+                    //    newVal = newNum;
+                    //}
+                    entry.value = newNum;
                 });
             });
             this.onUpdate();
@@ -191,7 +191,7 @@ export default {
                     });
                     newData.push(newRow);
                 });
-                this.data = newData;
+                this.data = this.$store.state.resultMatrix.data;
                 this.rows = this.$store.state.resultMatrix.rows;
                 this.cols = this.$store.state.resultMatrix.cols;
                 this.$emit('updateComplete', this.identity);

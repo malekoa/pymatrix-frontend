@@ -187,6 +187,9 @@
                 </button>
             </div>
         </div>
+        <span class="flex w-full justify-start text-xs text-red-600">
+            {{errorMsg}}
+        </span>
         <div class="flex flex-col w-full my-2">
             <div class="flex flex-col w-full p-2 space-y-2" :class="activeFunction == 'Determinant' ? 'hidden' : 'null'">
                 <div v-for="row in this.data" :key="row" class="flex space-x-2 justify-center">
@@ -224,6 +227,7 @@ export default {
             exponent: 2,
             scalar: '',
             waitingOnServer: false,
+            errorMsg: '',
         }
     },
     methods: {
@@ -324,8 +328,12 @@ export default {
                 self.data = self.setupDataAsValueObjects(response.data.data);
                 self.onUpdate();
                 self.waitingOnServer = false;
+                self.errorMsg = '';
             })
             .catch( function(error) {
+                if(self.$store.state.matrixA.rows != self.$store.state.matrixB.rows || self.$store.state.matrixA.cols != self.$store.state.matrixB.cols) {
+                    self.errorMsg = "Matrices must have equal dimensions."
+                }
                 console.log(error);
                 self.waitingOnServer = false;
             } );
@@ -341,8 +349,12 @@ export default {
                 self.data = self.setupDataAsValueObjects(response.data.data);
                 self.onUpdate();
                 self.waitingOnServer = false;
+                self.errorMsg = '';
             })
             .catch( function(error) {
+                if(self.$store.state.matrixA.rows != self.$store.state.matrixB.rows || self.$store.state.matrixA.cols != self.$store.state.matrixB.cols) {
+                    self.errorMsg = "Matrices must have equal dimensions."
+                }
                 console.log(error);
                 self.waitingOnServer = false;
             } );
@@ -358,8 +370,12 @@ export default {
                 self.data = self.setupDataAsValueObjects(response.data.data);
                 self.onUpdate();
                 self.waitingOnServer = false;
+                self.errorMsg = '';
             })
             .catch( function(error) {
+                if(self.$store.state.matrixA.cols != self.$store.state.matrixB.rows) {
+                    self.errorMsg = "Left matrix columns must be equal to right matrix rows."
+                }
                 console.log(error);
                 self.waitingOnServer = false;
             } );
@@ -376,8 +392,12 @@ export default {
                 self.data = self.setupDataAsValueObjects(response.data.data);
                 self.onUpdate();
                 self.waitingOnServer = false;
+                self.errorMsg = '';
             })
             .catch( function(error) {
+                if(!Number.isInteger(self.exponent)) {
+                    self.errorMsg = "Exponent must be an integer."
+                }
                 console.log(error);
                 self.waitingOnServer = false;
             } );
@@ -396,6 +416,9 @@ export default {
                 self.waitingOnServer = false;
             })
             .catch( function(error) {
+                if(!self.validateEntry(self.scalar)) {
+                    self.errorMsg = "Scalar must be a real number without letters and without combining slashes and decimals.";
+                }
                 console.log(error);
                 self.waitingOnServer = false;
             } );
@@ -486,6 +509,48 @@ export default {
                 self.waitingOnServer = false;
             } );
         },
+        validateEntry(value) {
+            value = String(value)
+            let numSlashes = 0;
+            let numDecimals = 0;
+            let numMinus = 0;
+            let nonNumericChars = 0;
+
+            [...value].forEach(character => {
+                character == '.' ? numDecimals++ : null;
+                character == '/' ? numSlashes++ : null;
+                character == '-' ? numMinus++ : null;
+                Number.isInteger(parseInt(character)) ? null : nonNumericChars++;
+            });
+
+            // if there are more nonNumericChars than just the slashes, decimals, and minuses in the string
+            if(nonNumericChars > (numSlashes + numDecimals + numMinus)) {
+                return false;
+            }
+
+            // if there are more than 1 slash or decimals or if both occurr.
+            if(numSlashes >= 2 || numDecimals >= 2 || (numSlashes > 0 && numDecimals > 0)) {
+                return false;
+            }
+
+            // if the number is fractional and the denominator is zero
+            if(numSlashes == 1 && numDecimals == 0 && value.split('/')[1] == '0') {
+                return false;
+            }
+
+            // if the field is left empty or is just a decimal or slash
+            if(value == '' || value == '.' || value == '/') {
+                return false;
+            }
+
+            // if the first or last character is a slash
+            let valArray = [...value];
+            if(valArray[0] == '/' || valArray[valArray.length - 1] == '/') {
+                return false;
+            }
+
+            return true;
+        },
     },
     watch: {
         activeFunction: function(newVal) {
@@ -497,7 +562,8 @@ export default {
                     entry.value = '';
                 });
             });
-        }
+            this.errorMsg = '';
+        },
     },
 }
 </script>
