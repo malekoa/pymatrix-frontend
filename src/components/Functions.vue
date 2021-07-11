@@ -446,10 +446,13 @@ export default {
             let requestBody = self.getOneMatrixOperationRequestBody();
             axios.post(`${apiUrl}/determinant`, requestBody)
             .then( function(response) {
-                self.rows = 1;
-                self.cols = 1;
                 console.log(response.data.determinant);
-                self.determinant_res = response.data.determinant;
+                let value = response.data.determinant.split('/');
+                if(value[1] == '1') {
+                    self.determinant_res = value[0];
+                } else {
+                    self.determinant_res = response.data.determinant;
+                }
                 self.onUpdate();
                 self.waitingOnServer = false;
             })

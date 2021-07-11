@@ -191,7 +191,7 @@ export default {
                     });
                     newData.push(newRow);
                 });
-                this.data = this.$store.state.resultMatrix.data;
+                this.data = newData;
                 this.rows = this.$store.state.resultMatrix.rows;
                 this.cols = this.$store.state.resultMatrix.cols;
                 this.$emit('updateComplete', this.identity);
